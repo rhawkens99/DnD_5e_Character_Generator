@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django.core.exceptions import ValidationError
 
 
 # Model for all classes in 5e
@@ -22,7 +23,12 @@ class Classes(models.Model):
     primary_ability = models.CharField(max_length=128, null=False)
 
     def __str__(self):
-        return f"Class Name: {self.name}\nHit Die{self.hit_die}\nPrimary Ability:{self.primary_ability}\nClass Description:{self.description}"
+        return f"Class Name: {self.name}\nHit Die: {self.hit_die}\nPrimary Ability: {self.primary_ability}\nClass Description: {self.description}"
+
+    # Overwrite `save` method to perform input validation on `hit_die`
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super(Classes, self).save(*args, **kwargs)
 
     # Changing table name
     class Meta:
